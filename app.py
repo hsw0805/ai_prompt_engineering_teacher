@@ -186,8 +186,6 @@ def main():
     # Conversation display and user input
     if 'selected_session' in st.session_state:
         selected_session = st.session_state.selected_session
-        print(len(name))
-        print(len(api_key_input))
         if len(name) > 0 and len(api_key_input) > 0:
             conversation_history = data['conversations'][selected_session]
             for message in conversation_history:
