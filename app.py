@@ -2,7 +2,6 @@ import streamlit as st
 import os
 import re
 import anthropic
-import hashlib
 import json
 from prompts import teacher_prompt
 from helpers import *
@@ -89,10 +88,6 @@ def run_prompt(conversation_response, conversation_history, selected_model):
 
     return conversation_response_text
 
-# Function to hash the API key
-def hash_api_key(api_key):
-    return hashlib.sha256(api_key.encode()).hexdigest()
-
 # Function to load session data from local storage
 def load_data():
     if 'data' not in st.session_state:
@@ -102,7 +97,6 @@ def load_data():
         else:
             data = {
                 'conversations': {},
-                'hashed_api_key': ''
             }
         st.session_state['data'] = data
     return st.session_state['data']
@@ -122,21 +116,15 @@ def main():
     # Load session data from local storage
     data = load_data()
     conversations = data['conversations']
-    hashed_api_key = data['hashed_api_key']
 
     # Show the "how-to" instructions in an expandable accordion
-    st.expander("How to Use", expanded=True).markdown(how_to_text)
+    st.expander("How to Use", expanded=False).markdown(how_to_text)
 
     name = st.sidebar.text_input("Please enter your name:")
     if name:
         st.session_state['name'] = name
     api_key_input = st.sidebar.text_input("Enter your Anthropic API key:", type="password")
     if api_key_input:
-        hashed_api_key_input = hash_api_key(api_key_input)
-        if hashed_api_key_input != hashed_api_key:
-            hashed_api_key = hashed_api_key_input
-            data['hashed_api_key'] = hashed_api_key
-            save_data(data)
         client = anthropic.Anthropic(api_key=api_key_input)
         
     # Model selection
